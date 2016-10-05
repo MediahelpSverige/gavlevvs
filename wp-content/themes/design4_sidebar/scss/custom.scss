@@ -1,0 +1,263 @@
+body{
+	color:black;
+	font-family:"open sans";
+	background-color:white;
+	overflow:hidden;
+
+	.container{
+
+		width: 1300px;
+
+	#sidopanel{
+background-color: #292929;
+    height: 100vh;
+    padding: 19px;
+    font-family: "open sans";
+
+    .search{
+    	position:relative;
+    	input{
+    		position:absolute;
+    		background-color:black;
+    		border: none;
+    	}
+    }
+
+		.logga{
+				width: 100%;
+				img{
+					width: 100%;
+					height: auto;
+					display: block;
+					max-width: 250px;
+				}
+			}
+			.menu{
+				margin-top: 30px;;
+
+			.main_nav{
+			list-style: none;
+			padding: 0px;
+
+			.current-menu-item{
+
+			
+
+					a{
+						color: red;
+					}
+		
+				
+			}
+
+			li{
+				padding:10px 0px;
+				color:blue;
+				a{
+					color: white;
+					font-weight: 900;
+					font-size: 20px;
+					text-transform: uppercase;
+				}
+			}
+		}
+	}
+
+	.social{
+		margin-top:30px;
+		margin-bottom: 30px;
+		display: flex;
+		flex-direction: row;
+
+
+		//justify-content: center;
+		i{
+			font-size:25px;
+			flex-basis: 15%;
+			color: white;
+
+
+		}
+	}
+
+	.partners{
+		display:flex;
+						flex-direction: row;
+					align-items:center;
+
+					  -webkit-flex-flow: row wrap;
+	  justify-content: space-around;
+
+		.partner{
+			display: block;
+			height:auto;
+			flex-basis: 33%;
+
+
+			img{
+
+				max-width: 100px;
+
+			}
+		}
+	}
+
+	@media(min-width:1400px){
+		left: 0%;
+
+}
+
+@media(max-width:1400px){
+		left: 1%;
+
+}
+
+}
+
+
+		#content{
+			position:realative;
+			font-family: "open sans";
+
+			.text{
+				z-index: 999;
+				position:relative;
+				padding-top:100px;
+				color: white;
+				width: 80%;
+				margin:auto;
+
+				h1{
+					font-family: "open sans";
+					font-family: inherit;
+					text-align: center;
+					font-size: 50px;
+					position:relative;
+					margin: 0px;
+					margin-bottom: 50px;
+					text-transform: uppercase;
+
+					&:before{
+						content: "";
+						position:absolute;
+						left: 0px;
+						top: 0px;
+						bottom:0px;
+						height: 2px;
+						width: 50px;
+						margin: auto;
+						background-color:red;
+					}
+
+					&:after{
+						content: "";
+						margin: auto;
+						position:absolute;
+						background-color:red;
+						right: 0px;
+						top: 0px;
+						bottom:0px;
+						height: 2px;
+						width: 50px;
+					}
+
+				}
+			}
+
+			.blurarea{
+position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 15px;
+    background-color: rgba(0, 0, 0, 0.4);
+
+				.blurcontainer{
+					position:relative;
+
+					.textarea{
+/* Put this on top of the blurred layer */
+  position: relative;
+  color: white;
+  z-index: 100;
+  padding: 20px;
+  background: rgb(34,34,34); /* for IE */
+  background: rgba(34,34,34,0.75);
+
+					}
+
+
+					.blur-bg{
+background-image:url('http://localhost:8080/design/wp-content/uploads/2016/09/AdobeStock_40515377.jpeg');
+background-size:cover;
+	    position: absolute;
+	    top: 0px;
+	    right: 0px;
+	    bottom: 0px;
+	    left: 0px;
+	    z-index: 99;
+	    background-position: center -70px;
+	    -webkit-filter: blur(10px);
+	    filter: url(/media/blur.svg#blur);
+	    filter: blur(10px);
+					}
+			}
+			}
+
+			.text-section{
+				margin:30px 0px;
+			}
+
+			p{
+				font-size: 18px;
+				line-height: 20px;
+				font-family: "open sans";
+			}
+
+			.banner{
+			background-position: 50%;
+			background-size:cover;
+			height: 100vh;
+			width: 100%;
+			overflow-y: scroll;
+				img{
+					width: 100%;
+					height: auto;
+					display: block
+				}
+			}
+
+			.tjanst-flex{
+				display: flex;
+				flex-direction: row;
+				align-items:center;
+
+			.tjanst{
+    				flex-basis:33%;
+    				padding:10px;
+
+    				img{
+    					width: 100%;
+    					height: auto;
+    				}
+			}
+		}
+	}
+		}
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+}
+
+
+::-webkit-scrollbar-thumb {
+    background: red;
+}
+
+
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+

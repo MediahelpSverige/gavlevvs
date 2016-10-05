@@ -1,0 +1,36 @@
+body {
+  /*HEADER END*/
+}
+
+body header {
+  background-color: #0074c8;
+  position: fixed;
+  top: 0px;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+body header ul {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+}
+
+body header ul #logo img {
+  max-width: 300px;
+}
+
+body header nav {
+  width: 100%;
+}
+
+body .container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+body .container .product {
+  width: 300px;
+  height: 300px;
+}

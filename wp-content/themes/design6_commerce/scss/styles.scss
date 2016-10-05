@@ -1,0 +1,56 @@
+$mmaincolor :#0074c8;
+
+body{
+
+
+
+	header{
+		background-color: $mmaincolor;
+		position: fixed;
+		top: 0px;
+		top: 0px;
+    	left: 0px;
+    	right: 0px;
+
+    	ul{
+
+    		display: flex;
+    		justify-content: space-around;
+    		list-style: none;
+
+    		#logo{
+
+    			//flex-grow: 2;
+
+    			img{
+    				max-width: 300px;
+    			}
+
+    		}
+
+    		li{
+
+
+    		}
+    	}
+
+		nav{
+			width: 100%;
+		}
+	}
+	/*HEADER END*/
+
+	.container{
+		max-width:1200px;
+		margin:auto;
+
+		.product{
+			width: 300px;
+			height: 300px;
+		}
+	}
+}
+
+
+
+

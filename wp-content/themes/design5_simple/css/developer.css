@@ -1,0 +1,106 @@
+/*css*/
+	
+
+/*CSS Media Queries*/
+@media (max-width: 1199px) {	
+	
+}
+@media (max-width: 991px) {
+	
+}
+
+@media (max-width: 767px) {
+	
+}
+@media (max-width: 600px) {
+	body {font-size: 13px;}
+}
+
+@media (max-width: 500px) {
+	
+	
+}
+@media (max-width: 400px) {
+	
+}
+/* End */
+
+.blog-btn-sm {
+    background-color: #e62628;
+    box-shadow: 0 3px 0 0 #bb0d0f;
+    color: #ffffff;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-block;
+    font-family:'Rockwell-Regular';
+    font-weight: 300;
+    transition: all 0.3s ease-in-out 0s;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    line-height: 20px;
+    padding: 8px 18px;
+    margin: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+.blog-btn-sm:hover{
+	background: #bb0d0f;
+	text-decoration: none;
+	color:#fff;
+}
+.fer h1{
+    text-align: center;
+        color: #E52F2C;
+    font-size: 40px;
+    font-family:'Rockwell-Regular';
+    font-weight: normal;
+    margin-top: 8px;
+}
+.fer p {
+    text-align: center;
+    color: #737373;
+    font-family: 'Rockwell-Regular';
+    font-size: 15px;
+    margin-top: -8px;
+    
+}
+.fer p:last-child{
+    margin-bottom: 55px;
+}
+.text {
+    padding: 18px;
+}
+.text  h3{
+    margin: 0 0 10px 0;
+    color:#545454;
+    font-family:'Rockwell-Regular';
+    font-weight: normal;
+}
+.text  p{
+    color:#8b8b8b;
+    font-size: 13px;
+    font-weight: normal;
+    
+}
+.text{
+	background:#fafafa;
+}
+
+div#glt-translate-trigger {
+    display: none;
+}
+
+.item {
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.fer{
+    margin: 50px 0px;
+    margin-bottom: 100px;
+}
+
+.navbar-nav > li > a{
+    font-family: lato;
+}

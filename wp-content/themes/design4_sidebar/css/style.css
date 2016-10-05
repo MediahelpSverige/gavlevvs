@@ -1,0 +1,12 @@
+body {
+  color: black;
+}
+
+body .main_nav {
+  list-style: none;
+  padding: 0px;
+}
+
+body .main_nav li {
+  color: red;
+}

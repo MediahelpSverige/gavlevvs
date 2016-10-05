@@ -1,0 +1,90 @@
+@font-face {
+	font-family:'Rockwell-Italic';
+	src: url('../fonts/Rockwell-Italic_gdi.eot');
+	src: url('../fonts/Rockwell-Italic_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell-Italic_gdi.woff') format('woff'),
+		url('../fonts/Rockwell-Italic_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell-Italic_gdi.svg#Rockwell-Italic') format('svg');
+	font-weight: 400;
+	font-style: italic;
+	font-stretch: normal;
+	unicode-range: U+0020-25CA;
+}
+
+@font-face {
+	font-family:'Rockwell-Condensed';
+	src: url('../fonts/Rockwell-Condensed_gdi.eot');
+	src: url('../fonts/Rockwell-Condensed_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell-Condensed_gdi.woff') format('woff'),
+		url('../fonts/Rockwell-Condensed_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell-Condensed_gdi.svg#Rockwell-Condensed') format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-stretch: condensed;
+	unicode-range: U+0020-F003;
+}
+
+@font-face {
+	font-family:'Rockwell-CondensedBold';
+	src: url('../fonts/Rockwell-CondensedBold_gdi.eot');
+	src: url('../fonts/Rockwell-CondensedBold_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell-CondensedBold_gdi.woff') format('woff'),
+		url('../fonts/Rockwell-CondensedBold_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell-CondensedBold_gdi.svg#Rockwell-CondensedBold') format('svg');
+	font-weight: 700;
+	font-style: normal;
+	font-stretch: condensed;
+	unicode-range: U+0020-F003;
+}
+
+@font-face {
+	font-family:'Rockwell-Regular';
+	src: url('../fonts/Rockwell_gdi.eot');
+	src: url('../fonts/Rockwell_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell_gdi.woff') format('woff'),
+		url('../fonts/Rockwell_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell_gdi.svg#Rockwell-Regular') format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-stretch: normal;
+	unicode-range: U+0020-25CA;
+}
+
+@font-face {
+	font-family:'Rockwell-Bold';
+	src: url('../fonts/Rockwell-Bold_gdi.eot');
+	src: url('../fonts/Rockwell-Bold_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell-Bold_gdi.woff') format('woff'),
+		url('../fonts/Rockwell-Bold_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell-Bold_gdi.svg#Rockwell-Bold') format('svg');
+	font-weight: 700;
+	font-style: normal;
+	font-stretch: normal;
+	unicode-range: U+0020-25CA;
+}
+
+@font-face {
+	font-family:'Rockwell-BoldItalic';
+	src: url('../fonts/Rockwell-BoldItalic_gdi.eot');
+	src: url('../fonts/Rockwell-BoldItalic_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell-BoldItalic_gdi.woff') format('woff'),
+		url('../fonts/Rockwell-BoldItalic_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell-BoldItalic_gdi.svg#Rockwell-BoldItalic') format('svg');
+	font-weight: 700;
+	font-style: italic;
+	font-stretch: normal;
+	unicode-range: U+0020-25CA;
+}
+
+@font-face {
+	font-family:'Rockwell-ExtraBold';
+	src: url('../fonts/Rockwell-ExtraBold_gdi.eot');
+	src: url('../fonts/Rockwell-ExtraBold_gdi.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Rockwell-ExtraBold_gdi.woff') format('woff'),
+		url('../fonts/Rockwell-ExtraBold_gdi.ttf') format('truetype'),
+		url('../fonts/Rockwell-ExtraBold_gdi.svg#Rockwell-ExtraBold') format('svg');
+	font-weight: 800;
+	font-style: normal;
+	font-stretch: normal;
+	unicode-range: U+0020-25CA;
+}
