@@ -396,7 +396,7 @@ $(document).ready(function(){
 	    		<div class="col-sm-7">
 	    			<h2 class="sub_header"><?php the_title();?></h2>
 	    			<div>
-	    				<?php echo do_shortcode('[contact-form-7 id="84" title="kontaktformulär-kontaktsida"]'); ?>
+	    				<?php echo do_shortcode(''. the_field('kontaktformular') .''); ?>
 	    			</div>
 	    		</div>
 	    		<div class="col-sm-5">
