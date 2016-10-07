@@ -386,7 +386,7 @@ $(document).ready(function(){
 
     <section class="banner">
     	<div class="container">
-    		<div class="cntctimg" style="width:100%;"><iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d32053.86147906547!2d17.694372!3d59.859663!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x691af148fefd86d8!2sMediahelp+Sverige+AB!5e0!3m2!1ssv!2sse!4v1474467126951" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe></div>
+    		<div class="cntctimg" style="width:100%;"><?php the_field('karta'); ?></div>
     	</div>
     </section>
 	
