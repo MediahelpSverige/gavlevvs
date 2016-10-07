@@ -6,6 +6,8 @@
 		    nav:true,
 		    margin:0,
 		    dots: false,
+		    autoplay:true,
+		    autoplayTimeout:4000,
 		    items: 1
 		});
 		

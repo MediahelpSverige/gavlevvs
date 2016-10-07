@@ -4319,3 +4319,10 @@ a.post-thumbnail:hover {
 		line-height: 36px;
 	}
 }
+
+.imgWrapOuter{
+	height: 300px;
+	width:300px;
+	background-size: cover;
+	background-position: center center;
+}
