@@ -12,10 +12,11 @@ get_header(); ?>
  <section class="banner">
     	<div class="container">
     		<div class="mainSlider">
-    			<?php query_posts( 'cat=4&showposts=-1' );?>
+    			<?php query_posts( 'cat=3&showposts=-1' );?>
     			<?php while ( have_posts() ) : the_post(); ?>
-    			<div class="item">
-    			<?php  $image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' ); ?>           						
+    			<?php  $image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' ); ?>   
+    			<div class="item" style="background-image:url('<?php echo $image[0]; ?>')">
+        						
     				<img src="<?php echo $image[0]; ?>" alt="" />
     			</div>
     			<?php endwhile;?>
