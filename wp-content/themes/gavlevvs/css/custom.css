@@ -349,3 +349,8 @@ textarea.form_fill_cell{
 .page-title{
     margin-bottom: 50px;
 }
+
+#omoss .page-title{
+	margin-bottom: 50px;
+	font-size: 24px;
+}

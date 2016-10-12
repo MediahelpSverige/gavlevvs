@@ -9,7 +9,7 @@
 
 get_header(); ?>
 
-    <section class="banner">
+    <section class="banner" id="omoss">
     	<div class="container">
     		<div class="cntctimg"><?php  $image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' ); ?>           						
     				<img src="<?php echo $image[0]; ?>" alt="" /></div>
