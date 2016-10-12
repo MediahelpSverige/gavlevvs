@@ -44,10 +44,11 @@ get_header(); ?>
                     <?php the_content(); ?>
 
                     </div>
+                    <?php  } ?>
 	    		</div>
 	    	</div>
 	    </div>
 	</section>
 <?php
-//get_sidebar();
+
 get_footer(); ?>
