@@ -92,8 +92,10 @@ div#glt-translate-trigger {
 }
 
 .item {
-    max-height: 300px;
     overflow: hidden;
+    height: 400px;
+    background-size: cover;
+    background-position: center;
 }
 
 .fer{
