@@ -580,3 +580,29 @@ require get_template_directory() . '/inc/customizer.php';
 if ( ! class_exists( 'Featured_Content' ) && 'plugins.php' !== $GLOBALS['pagenow'] ) {
 	require get_template_directory() . '/inc/featured-content.php';
 }
+
+
+function worker_posts() {
+	$args = array(
+
+		'public' =>true,
+		'label' => 'Anställda',
+		'description'        => __( 'Description.', 'landqvist' ),
+		'public'             => true,
+		'publicly_queryable' => true,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'worker' ),
+		'capability_type'    => 'post',
+		'has_archive'        => true,
+		'hierarchical'       => false,
+		'menu_position'      => null,
+		'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' )
+
+	);
+
+	register_post_type( 'worker', $args );
+}
+
+add_action(  'init', 'worker_posts' );

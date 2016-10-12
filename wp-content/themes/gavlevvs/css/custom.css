@@ -338,3 +338,14 @@ textarea.form_fill_cell{
 	}
 }
 
+.worker-img{
+
+    display: block;
+    height: 270px;
+    width: auto;
+
+}
+
+.page-title{
+    margin-bottom: 50px;
+}
