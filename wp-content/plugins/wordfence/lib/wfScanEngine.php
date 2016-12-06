@@ -36,7 +36,7 @@ class wfScanEngine {
 			);
 	private $userPasswdQueue = "";
 	private $passwdHasIssues = false;
-
+	private $suspectedFiles = false; //Files found with the ".suspected" extension
 
 	/**
 	 * @var wordfenceDBScanner
@@ -49,6 +49,8 @@ class wfScanEngine {
 	private $knownFilesLoader;
 	
 	private $metrics = array();
+	
+	private $checkHowGetIPsRequestTime = 0;
 
 	public static function testForFullPathDisclosure($url = null, $filePath = null) {
 		if ($url === null && $filePath === null) {
@@ -73,7 +75,7 @@ class wfScanEngine {
 	}
 
 	public function __sleep(){ //Same order here as above for properties that are included in serialization
-		return array('hasher', 'jobList', 'i', 'wp_version', 'apiKey', 'startTime', 'maxExecTime', 'publicScanEnabled', 'fileContentsResults', 'scanner', 'scanQueue', 'hoover', 'scanData', 'statusIDX', 'userPasswdQueue', 'passwdHasIssues', 'dbScanner', 'knownFilesLoader', 'metrics');
+		return array('hasher', 'jobList', 'i', 'wp_version', 'apiKey', 'startTime', 'maxExecTime', 'publicScanEnabled', 'fileContentsResults', 'scanner', 'scanQueue', 'hoover', 'scanData', 'statusIDX', 'userPasswdQueue', 'passwdHasIssues', 'suspectedFiles', 'dbScanner', 'knownFilesLoader', 'metrics', 'checkHowGetIPsRequestTime');
 	}
 	public function __construct(){
 		$this->startTime = time();
@@ -91,10 +93,12 @@ class wfScanEngine {
 		$this->jobList[] = 'checkSpamIP';
 		$this->jobList[] = 'checkGSB';
 		$this->jobList[] = 'heartbleed';
+		$this->jobList[] = 'checkHowGetIPs_init';
+		$this->jobList[] = 'checkHowGetIPs_main';
 		$this->jobList[] = 'knownFiles_init';
 		$this->jobList[] = 'knownFiles_main';
 		$this->jobList[] = 'knownFiles_finish';
-		foreach (array('knownFiles', 'checkReadableConfig', 'fileContents',
+		foreach (array('knownFiles', 'checkReadableConfig', 'fileContents', 'suspectedFiles',
 			         // 'wpscan_fullPathDisclosure', 'wpscan_directoryListingEnabled',
 			         'posts', 'comments', 'passwds', 'dns', 'diskSpace', 'oldVersions', 'suspiciousAdminUsers') as $scanType) {
 			if (wfConfig::get('scansEnabled_' . $scanType)) {
@@ -130,7 +134,18 @@ class wfScanEngine {
 			$this->recordMetric('scan', 'duration', (time() - $this->startTime));
 			$this->recordMetric('scan', 'memory', wfConfig::get('wfPeakMemory', 0));
 			$this->submitMetrics();
-		} catch(Exception $e){
+		}
+		catch (wfScanEngineDurationLimitException $e) {
+			wfConfig::set('lastScanCompleted', $e->getMessage());
+			$this->i->setScanTimeNow();
+			
+			$this->emailNewIssues(true);
+			$this->recordMetric('scan', 'duration', (time() - $this->startTime));
+			$this->recordMetric('scan', 'memory', wfConfig::get('wfPeakMemory', 0));
+			$this->submitMetrics();
+			throw $e;
+		}
+		catch(Exception $e) {
 			wfConfig::set('lastScanCompleted', $e->getMessage());
 			$this->recordMetric('scan', 'duration', (time() - $this->startTime));
 			$this->recordMetric('scan', 'memory', wfConfig::get('wfPeakMemory', 0));
@@ -139,8 +154,29 @@ class wfScanEngine {
 			throw $e;
 		}
 	}
+	public function checkForDurationLimit() {
+		$timeLimit = intval(wfConfig::get('scan_maxDuration'));
+		if ($timeLimit < 1) {
+			$timeLimit = WORDFENCE_DEFAULT_MAX_SCAN_TIME;
+		}
+		
+		if ((time() - $this->startTime) > $timeLimit){
+			$error = 'The scan time limit of ' . wfUtils::makeDuration($timeLimit) . ' has been exceeded and the scan will be terminated. This limit can be customized on the options page. <a href="http://docs.wordfence.com/en/Scan_time_limit" target="_blank">Get More Information</a>';
+			$this->addIssue('timelimit', 1, md5($this->startTime), md5($this->startTime), 'Scan Time Limit Exceeded', $error, array());
+			$summary = $this->i->getSummaryItems();
+			$this->status(1, 'info', '-------------------');
+			$this->status(1, 'info', "Scan interrupted. Scanned " . $summary['totalFiles'] . " files, " . $summary['totalPlugins'] . " plugins, " . $summary['totalThemes'] . " themes, " . ($summary['totalPages'] + $summary['totalPosts']) . " pages, " . $summary['totalComments'] . " comments and " . $summary['totalRows'] . " records in " . wfUtils::makeDuration(time() - $this->startTime, true) . ".");
+			if($this->i->totalIssues  > 0){
+				$this->status(10, 'info', "SUM_FINAL:Scan interrupted. You have " . $this->i->totalIssues . " new issues to fix. See below.");
+			} else {
+				$this->status(10, 'info', "SUM_FINAL:Scan interrupted. No problems found prior to stopping.");
+			}
+			throw new wfScanEngineDurationLimitException($error);
+		}
+	}
 	public function forkIfNeeded(){
 		self::checkForKill();
+		$this->checkForDurationLimit();
 		if(time() - $this->cycleStartTime > $this->maxExecTime){
 			wordfence::status(4, 'info', "Forking during hash scan to ensure continuity.");
 			$this->fork();
@@ -154,8 +190,8 @@ class wfScanEngine {
 		} //Otherwise there was an error so don't start another scan.
 		exit(0);
 	}
-	public function emailNewIssues(){
-		$this->i->emailNewIssues();
+	public function emailNewIssues($timeLimitReached = false){
+		$this->i->emailNewIssues($timeLimitReached);
 	}
 	public function submitMetrics() {
 		if (wfConfig::get('other_WFNet', true)) {
@@ -163,6 +199,15 @@ class wfScanEngine {
 		}
 	}
 	private function doScan(){
+		if (wfConfig::get('lowResourceScansEnabled')) {
+			$isFork = ($_GET['isFork'] == '1' ? true : false);
+			wfConfig::set('lowResourceScanWaitStep', !wfConfig::get('lowResourceScanWaitStep'));
+			if ($isFork && wfConfig::get('lowResourceScanWaitStep')) {
+				sleep($this->maxExecTime / 2);
+				$this->fork(); //exits
+			}
+		}
+		
 		while(sizeof($this->jobList) > 0){
 			self::checkForKill();
 			$jobName = $this->jobList[0];
@@ -180,7 +225,7 @@ class wfScanEngine {
 		}
 		$summary = $this->i->getSummaryItems();
 		$this->status(1, 'info', '-------------------');
-		$this->status(1, 'info', "Scan Complete. Scanned " . $summary['totalFiles'] . " files, " . $summary['totalPlugins'] . " plugins, " . $summary['totalThemes'] . " themes, " . ($summary['totalPages'] + $summary['totalPosts']) . " pages, " . $summary['totalComments'] . " comments and " . $summary['totalRows'] . " records in " . (time() - $this->startTime) . " seconds.");
+		$this->status(1, 'info', "Scan Complete. Scanned " . $summary['totalFiles'] . " files, " . $summary['totalPlugins'] . " plugins, " . $summary['totalThemes'] . " themes, " . ($summary['totalPages'] + $summary['totalPosts']) . " pages, " . $summary['totalComments'] . " comments and " . $summary['totalRows'] . " records in " . wfUtils::makeDuration(time() - $this->startTime, true) . ".");
 		if($this->i->totalIssues  > 0){
 			$this->status(10, 'info', "SUM_FINAL:Scan complete. You have " . $this->i->totalIssues . " new issues to fix. See below.");
 		} else {
@@ -297,6 +342,57 @@ class wfScanEngine {
 		} else {
 			wordfence::statusPaidOnly("Checking if your site is on the Google Safe Browsing list is for paid members only");
 			sleep(2);
+		}
+	}
+	
+	private function scan_checkHowGetIPs_init() {
+		if (wfConfig::get('scansEnabled_checkHowGetIPs')) {
+			$this->statusIDX['checkHowGetIPs'] = wordfence::statusStart("Checking for the most secure way to get IPs");
+			$this->checkHowGetIPsRequestTime = time();
+			wfUtils::requestDetectProxyCallback();
+		}
+		else {
+			wordfence::statusDisabled("Skipping scan for misconfigured How does Wordfence get IPs");
+		}
+	}
+	
+	private function scan_checkHowGetIPs_main() {
+		if (!defined('WORDFENCE_CHECKHOWGETIPS_TIMEOUT')) { define('WORDFENCE_CHECKHOWGETIPS_TIMEOUT', 30); }
+		
+		if (wfConfig::get('scansEnabled_checkHowGetIPs')) {
+			$haveIssues = false;
+			$existing = wfConfig::get('howGetIPs', '');
+			$recommendation = wfConfig::get('detectProxyRecommendation', '');
+			while (empty($recommendation) && (time() - $this->checkHowGetIPsRequestTime) < WORDFENCE_CHECKHOWGETIPS_TIMEOUT) {
+				sleep(1);
+				$this->forkIfNeeded();
+				$recommendation = wfConfig::get('detectProxyRecommendation', '');
+			}
+			
+			if ($recommendation == 'UNKNOWN' || empty($recommendation)) {
+				$this->addIssue('checkHowGetIPs', 2, 'checkHowGetIPs', 'checkHowGetIPs' . $recommendation . WORDFENCE_VERSION, "Unable to accurately detect IPs", 'Wordfence was unable to validate a test request to your website. This can happen if your website is behind a proxy that does not use one of the standard ways to convey the IP of the request or it is unreachable publicly. IP blocking and live traffic information may not be accurate. <a href="https://docs.wordfence.com/en/Misconfigured_how_get_IPs_notice " target="_blank">Get More Information</a>', array());
+				$haveIssues = true;
+			}
+			else if (!empty($existing) && $existing != $recommendation) {
+				$extraMsg = '';
+				if ($recommendation == 'REMOTE_ADDR') {
+					$extraMsg = ' For maximum security use PHP\'s built in REMOTE_ADDR.';
+				}
+				else if ($recommendation == 'HTTP_X_FORWARDED_FOR') {
+					$extraMsg = ' This site appears to be behind a front-end proxy, so using the X-Forwarded-For HTTP header will resolve to the correct IPs.';
+				}
+				else if ($recommendation == 'HTTP_X_REAL_IP') {
+					$extraMsg = ' This site appears to be behind a front-end proxy, so using the X-Real-IP HTTP header will resolve to the correct IPs.';
+				}
+				else if ($recommendation == 'HTTP_CF_CONNECTING_IP') {
+					$extraMsg = ' This site appears to be behind Cloudflare, so using the Cloudflare "CF-Connecting-IP" HTTP header will resolve to the correct IPs.';
+				}
+				
+				$this->addIssue('checkHowGetIPs', 2, 'checkHowGetIPs', 'checkHowGetIPs' . $recommendation . WORDFENCE_VERSION, "'How does Wordfence get IPs' is misconfigured", 'A test request to this website was detected on a different value for this setting. IP blocking and live traffic information may not be accurate. <a href="https://docs.wordfence.com/en/Misconfigured_how_get_IPs_notice " target="_blank">Get More Information</a>' . $extraMsg, array('recommendation' => $recommendation));
+				$haveIssues = true;
+			}
+			
+			wordfence::statusEnd($this->statusIDX['checkHowGetIPs'], $haveIssues);
 		}
 	}
 
@@ -452,18 +548,20 @@ class wfScanEngine {
 		if(! is_array($baseContents)){
 			throw new Exception("Wordfence could not read the contents of your base WordPress directory. This usually indicates your permissions are so strict that your web server can't read your WordPress directory.");
 		}
-		$scanOutside = wfConfig::get('other_scanOutside');
-		if($scanOutside){
-			wordfence::status(2, 'info', "Including files that are outside the WordPress installation in the scan.");
-		}
+		
 		$includeInKnownFilesScan = array();
-		foreach($baseContents as $file){ //Only include base files less than a meg that are files.
-			if($file == '.' || $file == '..'){ continue; }
-			$fullFile = rtrim(ABSPATH, '/') . '/' . $file;
-			if($scanOutside){
-				$includeInKnownFilesScan[] = $file;
-			} else if(in_array($file, $baseWPStuff) || (@is_file($fullFile) && @is_readable($fullFile) && (! wfUtils::fileTooBig($fullFile)) ) ){
-				$includeInKnownFilesScan[] = $file;
+		$scanOutside = wfConfig::get('other_scanOutside');
+		if ($scanOutside) {
+			wordfence::status(2, 'info', "Including files that are outside the WordPress installation in the scan.");
+			$includeInKnownFilesScan[] = ''; //Ends up as a literal ABSPATH
+		}
+		else {
+			foreach ($baseContents as $file) { //Only include base files less than a meg that are files.
+				if($file == '.' || $file == '..'){ continue; }
+				$fullFile = rtrim(ABSPATH, '/') . '/' . $file;
+				if (in_array($file, $baseWPStuff) || (@is_file($fullFile) && @is_readable($fullFile) && (!wfUtils::fileTooBig($fullFile)))) {
+					$includeInKnownFilesScan[] = $file;
+				}
 			}
 		}
 
@@ -484,8 +582,7 @@ class wfScanEngine {
 		$this->i->updateSummaryItem('totalData', wfUtils::formatBytes($this->hasher->totalData));
 		$this->i->updateSummaryItem('totalFiles', $this->hasher->totalFiles);
 		$this->i->updateSummaryItem('totalDirs', $this->hasher->totalDirs);
-		$this->i->updateSummaryItem('linesOfPHP', $this->hasher->linesOfPHP);
-		$this->i->updateSummaryItem('linesOfJCH', $this->hasher->linesOfJCH);
+		$this->suspectedFiles = $this->hasher->getSuspectedFiles();
 		$this->hasher = false;
 	}
 	private function scan_knownFiles_finish(){
@@ -522,6 +619,39 @@ class wfScanEngine {
 		wordfence::statusEnd($this->statusIDX['GSB'], $haveIssuesGSB);
 	}
 
+	private function scan_suspectedFiles() {
+		$haveIssues = false;
+		$status = wordfence::statusStart("Scanning for publicly accessible quarantined files");
+		
+		if (is_array($this->suspectedFiles) && count($this->suspectedFiles) > 0) {
+			foreach ($this->suspectedFiles as $file) {
+				wordfence::status(4, 'info', "Testing accessibility of: $file");
+				$test = wfPubliclyAccessibleFileTest::createFromRootPath($file);
+				if ($test->fileExists() && $test->isPubliclyAccessible()) {
+					$key = "publiclyAccessible" . bin2hex($test->getUrl());
+					if ($this->addIssue(
+						'publiclyAccessible',
+						2,
+						$key,
+						$key,
+						'Publicly accessible quarantined file found: ' . esc_html($file),
+						'<a href="' . $test->getUrl() . '" target="_blank">' . $test->getUrl() . '</a> is publicly
+					accessible and may expose source code or sensitive information about your site. Files such as this one are commonly
+					checked for by scanners and should be removed or made inaccessible.',
+						array(
+							'url'       => $test->getUrl(),
+							'file'      => $file,
+							'canDelete' => true,
+						)
+					)) {
+						$haveIssues = true;
+					}
+				}
+			}
+		}
+		
+		wordfence::statusEnd($status, $haveIssues);
+	}
 
 	private function scan_posts_init(){
 		$this->statusIDX['posts'] = wordfence::statusStart('Scanning posts for URLs in Google\'s Safe Browsing List');
@@ -1122,7 +1252,7 @@ class wfScanEngine {
 		return $this->i->addIssue($type, $severity, $ignoreP, $ignoreC, $shortMsg, $longMsg, $templateData);
 	}
 	public static function requestKill(){
-		wfConfig::set('wfKillRequested', time());
+		wfConfig::set('wfKillRequested', time(), wfConfig::DONT_AUTOLOAD);
 	}
 	public static function checkForKill(){
 		$kill = wfConfig::get('wfKillRequested', 0);
@@ -1134,12 +1264,13 @@ class wfScanEngine {
 	public static function startScan($isFork = false){
 		if(! $isFork){ //beginning of scan
 			wfConfig::inc('totalScansRun');	
-			wfConfig::set('wfKillRequested', 0);
+			wfConfig::set('wfKillRequested', 0, wfConfig::DONT_AUTOLOAD); 
 			wordfence::status(4, 'info', "Entering start scan routine");
 			if(wfUtils::isScanRunning()){
 				wfUtils::getScanFileError();
 				return "A scan is already running. Use the kill link if you would like to terminate the current scan.";
 			}
+			wfConfig::set('currentCronKey', ''); //Ensure the cron key is cleared
 		}
 		$timeout = self::getMaxExecutionTime() - 2; //2 seconds shorter than max execution time which ensures that only 2 HTTP processes are ever occupied
 		$testURL = admin_url('admin-ajax.php?action=wordfence_testAjax');
@@ -1480,7 +1611,7 @@ class wfCommonBackupFileTest {
 	 * @return wfCommonBackupFileTest
 	 */
 	public static function createFromRootPath($path) {
-		return new self(home_url($path), ABSPATH . $path);
+		return new self(site_url($path), ABSPATH . $path); 
 	}
 
 	private $url;
@@ -1575,4 +1706,11 @@ class wfCommonBackupFileTest {
 	public function getResponse() {
 		return $this->response;
 	}
+}
+
+class wfPubliclyAccessibleFileTest extends wfCommonBackupFileTest {
+	
+}
+
+class wfScanEngineDurationLimitException extends Exception {
 }
