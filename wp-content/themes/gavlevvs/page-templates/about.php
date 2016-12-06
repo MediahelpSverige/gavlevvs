@@ -37,7 +37,7 @@ get_header(); ?>
                 <?php while($query->have_posts()){ 
                     $query->the_post(); ?>
 
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-4 col-sm-4 worker-div">
 
                     <img class="worker-img" src="<?php the_post_thumbnail_url('medium'); ?>">
                    <h4> <?php the_title(); ?></h4>
