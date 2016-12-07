@@ -32,23 +32,7 @@ get_header(); ?>
 	    		<?php the_content(); ?>
 				<?php endwhile;?>
 				<?php wp_reset_postdata(); ?>
-	    		</div>
-	    		<?php $event_query = new WP_Query(array('post_type' => 'page','post_parent'  => 6, 'posts_per_page' => '-1','order'=> 'DESC')); 
-                  while ( $event_query->have_posts() ) : $event_query->the_post(); ?>
-                  <?php  $image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large' ); ?>   
-	    		<div class="col-sm-4 col-md-4">
-	    		<div class="boximage"></div>
-	    			<div class="imgWrapOuter" style="background-image:url('<?php echo $image[0]; ?>')">
-		    			<div class="imgWrap">        		</div>
-	    			</div>
-	    			<div class="text">
-	    				<h3><?php the_title(); ?></h3>
-				    	<p><?php echo wp_trim_words(get_the_content(),14,'.')?></p>
-				    	<div class="blog-btn-area-sm"><a href="<?php the_permalink(); ?>" class="blog-btn-sm">Läs mer</a></div>
-	    			</div>
-	    			
-	    		</div>
-	    		<?php endwhile; ?>
+	    		</div>	    		
 	    	</div>
 	    	
 	    </div>

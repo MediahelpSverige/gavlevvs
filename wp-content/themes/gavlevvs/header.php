@@ -16,8 +16,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="/favicon.ico" type="<?php bloginfo('template_directory'); ?>/image/x-icon">
-	<link rel="icon" href="<?php bloginfo('template_directory'); ?>/images/favicon.ico" type="<?php bloginfo('template_directory'); ?>/image/x-icon">
 
     <title><?php wp_title( '|', true, 'right' ); ?></title>
 
