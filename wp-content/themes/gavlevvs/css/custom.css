@@ -33,6 +33,11 @@ ul {
 	margin: 0 !important;
 	padding: 0;
 }
+
+input:not([type="submit"]),
+textarea {
+	border: 1px solid rgba(0, 0, 0, 0.4) !important;
+}
 /*header*/
 .header {
 	position: relative;
@@ -271,7 +276,8 @@ ul {
 	margin-bottom: 25px;
 }
 
-.sub_header{
+.sub_header,
+.contact-page h3 {
 	font-size: 32px;
 	color:#e3302c;
 	font-weight: normal;
@@ -344,6 +350,8 @@ textarea.form_fill_cell{
     margin-bottom: 10px;
 }
 
+
+
 @media(min-width: 768px) {
 	.navbar-nav > li + li:before {
 		content: "";
@@ -394,5 +402,12 @@ textarea.form_fill_cell{
 
 	.navbar ul.sub-menu li {
 		padding: 5px 0;
+	}
+}
+
+@media (max-width: 640px) {
+	input:not([type="submit"]),
+	textarea {
+		width: 100%;
 	}
 }

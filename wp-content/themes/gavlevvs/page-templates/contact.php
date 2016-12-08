@@ -391,16 +391,15 @@ $(document).ready(function(){
     </section>
 	
 	<section class="container">
-	    <div class="content">
+	    <div class="content contact-page">
 	    	<div class="row">
-	    		<div class="col-sm-7">
-	    			<h2 class="sub_header"><?php the_title();?></h2>
-	    			<div>
-	    				<?php echo do_shortcode(the_field('kontaktformular')); ?>
-	    			</div>
+	    		<div class="col-sm-6 col-xs-12">
+	    			<?php echo do_shortcode(the_field('kontaktformular')); ?>	    			
 	    		</div>
-	    		<div class="col-sm-5">
-	    			<div class="row address_row">
+	    		<div class="col-sm-6 col-xs-12">
+					<?php the_field('contact-page'); ?>
+
+	    			<?php /* <div class="row address_row">
 	    				<div class="col-sm-6">
 	    					<?php dynamic_sidebar('sidebar-5'); ?>
 	    				</div>
@@ -423,7 +422,7 @@ $(document).ready(function(){
 	    				<div class="col-sm-6">
 	    					<?php dynamic_sidebar('sidebar-10'); ?>
 	    				</div>
-	    			</div>
+	    			</div> */ ?>
 	    		</div>
 	    	</div>	
 	    </div>
