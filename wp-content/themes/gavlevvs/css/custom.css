@@ -130,10 +130,10 @@ textarea {
 
 /*content*/
 .content {
-	padding: 40px;
+	/*padding: 40px;*/
 	/*border: 1px solid #e3e3e3;*/
 	background: #fff;
-	margin-bottom: 50px;
+	/*margin-bottom: 50px;*/
 	padding: 40px 0px;
 }
 
@@ -350,6 +350,10 @@ textarea.form_fill_cell{
     margin-bottom: 10px;
 }
 
+.fer {
+	margin-bottom: 0;
+	margin: 50px 0;
+}
 
 
 @media(min-width: 768px) {
